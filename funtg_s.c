@@ -34,7 +34,7 @@ double distantzia_genetikoa (float *elem1, float *elem2)
 
 
 
-nf/* 2 - Talde gertuena kalkulatzeko funtzioa (zentroide gertuena)
+/* 2 - Talde gertuena kalkulatzeko funtzioa (zentroide gertuena)
 
        Sarrera:  elekop   elementu kopurua, int
                  elem     EMAX x ALDAKOP tamainako matrizea
@@ -128,7 +128,7 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
 
   // EGITEKO
   // Prozesatu eritasunei buruzko informazioa talde bakoitzeko kideen artean:
-  // eritasunak agertzeko probabilitateen mediana.
+// eritasunak agertzeko probabilitateen mediana.
   // Eritasun bakoitzerako, medianen maximoa eta minimoa eta zein taldetan.
   //
   // Pseudokodea:
@@ -141,6 +141,38 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
   //            ordenatu arr eta i/2 balioa hartu medianak arraian sartu
   //      medianen maximoa eta minimoa atera, eripron-sartu
   //
+  for (int i = 0; i < ERIMOTA; i++) {
+      float medianak[TALDEKOP];
+      for (int j = 0; j < TALDEKOP; j++) {
+          int kop = kideak[j].kop;
+          float *arr = (float *)malloc(kop * sizeof(float));
+
+          for (int k = 0; k < kop; k++) {
+              arr[k] = eri[kideak[j].osagaiak[k]][i];
+          }
+          mergeSort(arr, 0, kop - 1);
+          medianak[j] = arr[kop / 2];
+      }
+      float mmax = -1;
+      float mmin = 101;
+      int tmax = -1;
+      int tmin = -1;
+  
+      for (int j = 1; j < TALDEKOP; j++) {
+          if (medianak[j] > mmax) {
+              mmax = medianak[j];
+              tmax = j;
+          }
+          if (medianak[j] < mmin) {
+              mmin = medianak[j];
+              tmin = j;
+          }
+      }
+  
+      eripro->mmax[i] = mmax;
+      eripro->mmin[i] = mmin;
+      eripro->taldemax[i] = tmax;
+      eripro->taldemin[i] = tmin;
 }
 
 
