@@ -29,6 +29,14 @@ double distantzia_genetikoa (float *elem1, float *elem2)
   // EGITEKO
   // Kalkulatu bi elementuren arteko distantzia (euklidearra)
 
+    double sum = 0;
+
+    for ( int i=0; i<ALDAKOP; i++ )
+    {
+        sum += pow( elem1[i] - elem2[i] , 2);
+    }
+
+    return sqrt(sum);
 }
 
 
