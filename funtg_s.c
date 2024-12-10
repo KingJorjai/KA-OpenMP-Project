@@ -71,7 +71,6 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
   // Kalkulatu taldeen trinkotasuna: kideen arteko distantzien batezbestekoa
 
-  float batezbestekoa[taldekop];
   float sum;
 
   for (int i=0; i<taldekop; i++) // for each talde in kideak
@@ -84,7 +83,7 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
         sum += distantzia_genetikoa( elem[ kideak[i].osagaiak[j] ] , elem[ kideak[i].osagaiak[k] ] );
       }
     }
-    batezbestekoa[i] = sum / (kideak[i].kop * (kideak[i].kop - 1) / (float) 2);
+    talde_trinko[i] = sum / (kideak[i].kop * (kideak[i].kop - 1) / (float) 2);
   }
 
   // Kalkulatu zentroideen trinkotasuna: zentroide bakoitzeko, besteekiko b.b.-ko distantzia 
