@@ -75,6 +75,7 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
   for (int i=0; i<taldekop; i++) // for each talde in kideak
   {
+    sum = 0;
 
     for (int j=0; j<kideak[i].kop-1; j++)
     {
@@ -88,6 +89,22 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
   // Kalkulatu zentroideen trinkotasuna: zentroide bakoitzeko, besteekiko b.b.-ko distantzia 
 
+  float talde_bereizketa[taldekop]; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
+
+  for (int i=0; i<taldekop; i++)
+  {
+    sum = 0;
+
+    for (int j=0; j<taldekop; j++)
+    {
+      if (i != j)
+      {
+        sum += distantzia_genetikoa(zent[i], zent[j]);
+      }
+    }
+
+    talde_bereizketa[i] = sum;
+  }
   // Kalkulatu cvi indizea
   
   return cvi;
