@@ -142,15 +142,15 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
   //      medianen maximoa eta minimoa atera, eripron-sartu
   //
   for (int i = 0; i < ERIMOTA; i++) {
-      float medianak[TALDEKOP];
-      for (int j = 0; j < TALDEKOP; j++) {
+      float medianak[taldekop];
+      for (int j = 0; j < taldekop; j++) {
           int kop = kideak[j].kop;
           float *arr = (float *)malloc(kop * sizeof(float));
 
           for (int k = 0; k < kop; k++) {
               arr[k] = eri[kideak[j].osagaiak[k]][i];
           }
-          mergeSort(arr, 0, kop - 1);
+          mergeOrdenazioa(arr, 0, kop/2, kop - 1);
           medianak[j] = arr[kop / 2];
       }
       float mmax = -1;
@@ -158,7 +158,7 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
       int tmax = -1;
       int tmin = -1;
   
-      for (int j = 1; j < TALDEKOP; j++) {
+      for (int j = 1; j < taldekop; j++) {
           if (medianak[j] > mmax) {
               mmax = medianak[j];
               tmax = j;
@@ -169,10 +169,11 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
           }
       }
   
-      eripro->mmax[i] = mmax;
-      eripro->mmin[i] = mmin;
-      eripro->taldemax[i] = tmax;
-      eripro->taldemin[i] = tmin;
+      eripro[i].mmax = mmax;
+      eripro[i].mmin = mmin;
+      eripro[i].taldemax = tmax;
+      eripro[i].taldemin = tmin;
+  }
 }
 
 
