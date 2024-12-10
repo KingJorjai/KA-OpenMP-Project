@@ -7,6 +7,7 @@
     OSATZEKO
 ******************************************************************************************/
 
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>		// DBL_MAX
@@ -90,6 +91,7 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
   // Kalkulatu zentroideen trinkotasuna: zentroide bakoitzeko, besteekiko b.b.-ko distantzia 
 
   float talde_bereizketa[taldekop]; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
+  float max[taldekop];
 
   for (int i=0; i<taldekop; i++)
   {
@@ -97,15 +99,24 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
     for (int j=0; j<taldekop; j++)
     {
-      if (i != j)
-      {
-        sum += distantzia_genetikoa(zent[i], zent[j]);
-      }
+      if (i != j) sum += distantzia_genetikoa(zent[i], zent[j]);
     }
 
     talde_bereizketa[i] = sum;
+
+    if (sum > talde_trinko[i])  max[i] = sum;
+    else                        max[i] = talde_trinko[i];
   }
+
   // Kalkulatu cvi indizea
+  sum = 0;
+
+  for (int i=0; i<taldekop; i++)
+  {
+    sum += (talde_bereizketa[i] - talde_trinko[i]) / max[i];
+  }
+
+  cvi = 1/(double)taldekop * sum;
   
   return cvi;
 }
