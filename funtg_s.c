@@ -34,7 +34,7 @@ double distantzia_genetikoa (float *elem1, float *elem2)
 
 
 
-/* 2 - Talde gertuena kalkulatzeko funtzioa (zentroide gertuena)
+nf/* 2 - Talde gertuena kalkulatzeko funtzioa (zentroide gertuena)
 
        Sarrera:  elekop   elementu kopurua, int
                  elem     EMAX x ALDAKOP tamainako matrizea
@@ -79,14 +79,50 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
 
 
+void mergeOrdenazioa(float arr[], int left, int mid, int right) {
+    int i, j, k;
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
 
-/* 4 - Eritasunak analizatzeko funtzioa 
+    // Create temporary arrays
+    float leftArr[n1], rightArr[n2];
 
-       Sarrera:  kideak  taldekideen zerrenda (taldekop tamainako struct-bektore bat: elem eta kop)
-                 eri     eritasunei buruzko informazioa (EMAX x ERIMOTA)
-       Irteera:  eripro  eritasunen analisia: medianen maximoa/minimoa, eta taldeak
-******************************************************************************************/
+    // Copy data to temporary arrays
+    for (i = 0; i < n1; i++)
+        leftArr[i] = arr[left + i];
+    for (j = 0; j < n2; j++)
+        rightArr[j] = arr[mid + 1 + j];
 
+    // Merge the temporary arrays back into arr[left..right]
+    i = 0;
+    j = 0;
+    k = left;
+    while (i < n1 && j < n2) {
+        if (leftArr[i] <= rightArr[j]) {
+            arr[k] = leftArr[i];
+            i++;
+        }
+        else {
+            arr[k] = rightArr[j];
+            j++;
+        }
+        k++;
+    }
+
+    // Copy the remaining elements of leftArr[], if any
+    while (i < n1) {
+        arr[k] = leftArr[i];
+        i++;
+        k++;
+    }
+
+    // Copy the remaining elements of rightArr[], if any
+    while (j < n2) {
+        arr[k] = rightArr[j];
+        j++;
+        k++;
+    }
+}
 void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct analisia *eripro)
 {
 
@@ -94,10 +130,18 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
   // Prozesatu eritasunei buruzko informazioa talde bakoitzeko kideen artean:
   // eritasunak agertzeko probabilitateen mediana.
   // Eritasun bakoitzerako, medianen maximoa eta minimoa eta zein taldetan.
-
+  //
+  // Pseudokodea:
+  // I begizta erimota arte, honek eritasun bakoitzeko iteratuko du.
+  //      Mediana float array bat taldekop tamainakoa taldeen medianak gordetzeko
+  //      J begizta taldekop arte, honek eritasun bakoitzean taldeak iteratuko ditu
+  //            arr[] float array bat (malloc) kideak[j].kop tamainakoa honek elementuen informazioa izango du.
+  //            K begizta kideak[j].kop tamainakoa, honek eritasun bakoitzeko talde bakoitzeko elementuak iteratuko ditu.
+  //                  kideak[j].osagaiak[k] begiratu eri[i]n eta arr[] en jarri.
+  //            ordenatu arr eta i/2 balioa hartu medianak arraian sartu
+  //      medianen maximoa eta minimoa atera, eripron-sartu
+  //
 }
-
-
 
 
 // PROGRAMA NAGUSIAREN BESTE BI FUNTZIO
