@@ -54,14 +54,15 @@ double distantzia_genetikoa (float *elem1, float *elem2)
 
 void talde_gertuena (int elekop, float elem[][ALDAKOP], float zent[][ALDAKOP], int *sailka)
 {
-
+  int talde_gertuena;
+  double distantzia;
   // EGITEKO
   // sailka: elementu bakoitzaren zentroide hurbilena, haren "taldea"
 
   for (int i=0; i<elekop; i++)
   {
-    int talde_gertuena = -1;
-    double distantzia = DBL_MAX;
+    talde_gertuena = -1;
+    distantzia = DBL_MAX;
 
     for (int j=0; j<taldekop; j++)
     {  
@@ -96,7 +97,7 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
   // Kalkulatu taldeen trinkotasuna: kideen arteko distantzien batezbestekoa
 
-  float sum;
+  float sum, talde_bereizketa[taldekop], max[taldekop]; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
 
   for (int i=0; i<taldekop; i++) // for each talde in kideak
   {
@@ -120,9 +121,6 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
   }
 
   // Kalkulatu zentroideen trinkotasuna: zentroide bakoitzeko, besteekiko b.b.-ko distantzia 
-
-  float talde_bereizketa[taldekop]; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
-  float max[taldekop];
 
   for (int i=0; i<taldekop; i++)
   {
@@ -225,8 +223,11 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
   //
   for (int i = 0; i < ERIMOTA; i++) {
       float medianak[taldekop];
+      int kop, tmax, tmin;
+      float mmax, mmin; 
+
       for (int j = 0; j < taldekop; j++) {
-          int kop = kideak[j].kop;
+          kop = kideak[j].kop;
           float *arr = (float *)malloc(kop * sizeof(float));
 
           for (int k = 0; k < kop; k++) {
@@ -236,10 +237,10 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
           medianak[j] = arr[kop / 2];
           free(arr); 
       }
-      float mmax = -1;
-      float mmin = 101;
-      int tmax = -1;
-      int tmin = -1;
+      mmax = -1;
+      mmin = 101;
+      tmax = -1;
+      tmin = -1;
   
       for (int j = 1; j < taldekop; j++) {
           if (medianak[j] > mmax) {
