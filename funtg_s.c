@@ -55,20 +55,20 @@ double distantzia_genetikoa (float *elem1, float *elem2)
 void talde_gertuena (int elekop, float elem[][ALDAKOP], float zent[][ALDAKOP], int *sailka)
 {
   int talde_gertuena;
-  double distantzia;
+  double distantzia, distantziaMax;
   // EGITEKO
   // sailka: elementu bakoitzaren zentroide hurbilena, haren "taldea"
 
   for (int i=0; i<elekop; i++)
   {
     talde_gertuena = -1;
-    distantzia = DBL_MAX;
+    distantziaMax = DBL_MAX;
 
     for (int j=0; j<taldekop; j++)
     {  
-      if (distantzia_genetikoa(elem[i], zent[j]) < distantzia) {
-        
-        distantzia = distantzia_genetikoa(elem[i], zent[j]);
+      distantzia = distantzia_genetikoa(elem[i], zent[j]); 
+      if (distantzia < distantziaMax) {
+        distantziaMax = distantzia; 
         talde_gertuena = j;
       }
     }
