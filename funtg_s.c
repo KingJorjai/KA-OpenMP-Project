@@ -7,6 +7,7 @@
     OSATZEKO
 ******************************************************************************************/
 
+#include <cstdint>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>		// DBL_MAX
@@ -48,6 +49,21 @@ void talde_gertuena (int elekop, float elem[][ALDAKOP], float zent[][ALDAKOP], i
   // EGITEKO
   // sailka: elementu bakoitzaren zentroide hurbilena, haren "taldea"
 
+  for (int i=0; i<elekop; i++)
+  {
+    int talde_gertuena = -1;
+    double distantzia = DBL_MAX;
+
+    for (int j=0; j<taldekop; j++)
+    {  
+      if (distantzia_genetikoa(elem[i], zent[j]) < distantzia) {
+        
+        distantzia = distantzia_genetikoa(elem[i], zent[j]);
+        talde_gertuena = j;
+      }
+    }
+    sailka[i] = talde_gertuena;
+  }
 }
 
 
