@@ -147,25 +147,102 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
 
 
+void mergeOrdenazioa(float arr[], int left, int mid, int right) {
+    int i, j, k;
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
 
-/* 4 - Eritasunak analizatzeko funtzioa 
+    // Create temporary arrays
+    float leftArr[n1], rightArr[n2];
 
-       Sarrera:  kideak  taldekideen zerrenda (taldekop tamainako struct-bektore bat: elem eta kop)
-                 eri     eritasunei buruzko informazioa (EMAX x ERIMOTA)
-       Irteera:  eripro  eritasunen analisia: medianen maximoa/minimoa, eta taldeak
-******************************************************************************************/
+    // Copy data to temporary arrays
+    for (i = 0; i < n1; i++)
+        leftArr[i] = arr[left + i];
+    for (j = 0; j < n2; j++)
+        rightArr[j] = arr[mid + 1 + j];
 
+    // Merge the temporary arrays back into arr[left..right]
+    i = 0;
+    j = 0;
+    k = left;
+    while (i < n1 && j < n2) {
+        if (leftArr[i] <= rightArr[j]) {
+            arr[k] = leftArr[i];
+            i++;
+        }
+        else {
+            arr[k] = rightArr[j];
+            j++;
+        }
+        k++;
+    }
+
+    // Copy the remaining elements of leftArr[], if any
+    while (i < n1) {
+        arr[k] = leftArr[i];
+        i++;
+        k++;
+    }
+
+    // Copy the remaining elements of rightArr[], if any
+    while (j < n2) {
+        arr[k] = rightArr[j];
+        j++;
+        k++;
+    }
+}
 void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct analisia *eripro)
 {
 
   // EGITEKO
   // Prozesatu eritasunei buruzko informazioa talde bakoitzeko kideen artean:
-  // eritasunak agertzeko probabilitateen mediana.
+// eritasunak agertzeko probabilitateen mediana.
   // Eritasun bakoitzerako, medianen maximoa eta minimoa eta zein taldetan.
+  //
+  // Pseudokodea:
+  // I begizta erimota arte, honek eritasun bakoitzeko iteratuko du.
+  //      Mediana float array bat taldekop tamainakoa taldeen medianak gordetzeko
+  //      J begizta taldekop arte, honek eritasun bakoitzean taldeak iteratuko ditu
+  //            arr[] float array bat (malloc) kideak[j].kop tamainakoa honek elementuen informazioa izango du.
+  //            K begizta kideak[j].kop tamainakoa, honek eritasun bakoitzeko talde bakoitzeko elementuak iteratuko ditu.
+  //                  kideak[j].osagaiak[k] begiratu eri[i]n eta arr[] en jarri.
+  //            ordenatu arr eta i/2 balioa hartu medianak arraian sartu
+  //      medianen maximoa eta minimoa atera, eripron-sartu
+  //
+  for (int i = 0; i < ERIMOTA; i++) {
+      float medianak[taldekop];
+      for (int j = 0; j < taldekop; j++) {
+          int kop = kideak[j].kop;
+          float *arr = (float *)malloc(kop * sizeof(float));
 
+          for (int k = 0; k < kop; k++) {
+              arr[k] = eri[kideak[j].osagaiak[k]][i];
+          }
+          mergeOrdenazioa(arr, 0, kop/2, kop - 1);
+          medianak[j] = arr[kop / 2];
+          free(arr); 
+      }
+      float mmax = -1;
+      float mmin = 101;
+      int tmax = -1;
+      int tmin = -1;
+  
+      for (int j = 1; j < taldekop; j++) {
+          if (medianak[j] > mmax) {
+              mmax = medianak[j];
+              tmax = j;
+          }
+          if (medianak[j] < mmin) {
+              mmin = medianak[j];
+              tmin = j;
+          }
+      }
+      eripro[i].mmax = mmax;
+      eripro[i].mmin = mmin;
+      eripro[i].taldemax = tmax;
+      eripro[i].taldemin = tmin;
+  }
 }
-
-
 
 
 // PROGRAMA NAGUSIAREN BESTE BI FUNTZIO
