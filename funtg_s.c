@@ -8,7 +8,7 @@
 ******************************************************************************************/
 
 #include <stddef.h>
-#include <cstdint>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>		// DBL_MAX
