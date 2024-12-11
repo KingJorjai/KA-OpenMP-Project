@@ -102,14 +102,21 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
   {
     sum = 0;
 
-    for (int j=0; j<kideak[i].kop-1; j++)
+    if (kideak[i].kop<=1) talde_trinko[i]=0; // Avoid NAN
+
+    else
     {
-       for (int k=j+1; k<kideak[i].kop; k++)
+
+      for (int j=0; j<kideak[i].kop-1; j++)
       {
-        sum += distantzia_genetikoa( elem[ kideak[i].osagaiak[j] ] , elem[ kideak[i].osagaiak[k] ] );
+         for (int k=j+1; k<kideak[i].kop; k++)
+        {
+          sum += distantzia_genetikoa( elem[ kideak[i].osagaiak[j] ] , elem[ kideak[i].osagaiak[k] ] );
+        }
       }
+      talde_trinko[i] = sum / (kideak[i].kop * (kideak[i].kop - 1) / (float) 2);
     }
-    talde_trinko[i] = sum / (kideak[i].kop * (kideak[i].kop - 1) / (float) 2);
+
   }
 
   // Kalkulatu zentroideen trinkotasuna: zentroide bakoitzeko, besteekiko b.b.-ko distantzia 
