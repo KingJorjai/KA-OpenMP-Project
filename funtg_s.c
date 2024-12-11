@@ -7,6 +7,7 @@
     OSATZEKO
 ******************************************************************************************/
 
+#include <stddef.h>
 #include <cstdint>
 #include <stdio.h>
 #include <stdlib.h>
@@ -91,14 +92,57 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 {
 
   // EGITEKO
-
+  double cvi;
 
   // Kalkulatu taldeen trinkotasuna: kideen arteko distantzien batezbestekoa
 
+  float sum;
+
+  for (int i=0; i<taldekop; i++) // for each talde in kideak
+  {
+    sum = 0;
+
+    for (int j=0; j<kideak[i].kop-1; j++)
+    {
+       for (int k=j+1; k<kideak[i].kop; k++)
+      {
+        sum += distantzia_genetikoa( elem[ kideak[i].osagaiak[j] ] , elem[ kideak[i].osagaiak[k] ] );
+      }
+    }
+    talde_trinko[i] = sum / (kideak[i].kop * (kideak[i].kop - 1) / (float) 2);
+  }
+
   // Kalkulatu zentroideen trinkotasuna: zentroide bakoitzeko, besteekiko b.b.-ko distantzia 
 
+  float talde_bereizketa[taldekop]; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
+  float max[taldekop];
+
+  for (int i=0; i<taldekop; i++)
+  {
+    sum = 0;
+
+    for (int j=0; j<taldekop; j++)
+    {
+      if (i != j) sum += distantzia_genetikoa(zent[i], zent[j]);
+    }
+
+    talde_bereizketa[i] = sum;
+
+    if (sum > talde_trinko[i])  max[i] = sum;
+    else                        max[i] = talde_trinko[i];
+  }
+
   // Kalkulatu cvi indizea
+  sum = 0;
+
+  for (int i=0; i<taldekop; i++)
+  {
+    sum += (talde_bereizketa[i] - talde_trinko[i]) / max[i];
+  }
+
+  cvi = 1/(double)taldekop * sum;
   
+  return cvi;
 }
 
 
