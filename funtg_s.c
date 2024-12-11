@@ -8,6 +8,7 @@
 ******************************************************************************************/
 
 #include <stddef.h>
+#include <cstdint>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>		// DBL_MAX
@@ -30,6 +31,14 @@ double distantzia_genetikoa (float *elem1, float *elem2)
   // EGITEKO
   // Kalkulatu bi elementuren arteko distantzia (euklidearra)
 
+    double sum = 0;
+
+    for ( int i=0; i<ALDAKOP; i++ )
+    {
+        sum += pow( elem1[i] - elem2[i] , 2);
+    }
+
+    return sqrt(sum);
 }
 
 
@@ -49,6 +58,21 @@ void talde_gertuena (int elekop, float elem[][ALDAKOP], float zent[][ALDAKOP], i
   // EGITEKO
   // sailka: elementu bakoitzaren zentroide hurbilena, haren "taldea"
 
+  for (int i=0; i<elekop; i++)
+  {
+    int talde_gertuena = -1;
+    double distantzia = DBL_MAX;
+
+    for (int j=0; j<taldekop; j++)
+    {  
+      if (distantzia_genetikoa(elem[i], zent[j]) < distantzia) {
+        
+        distantzia = distantzia_genetikoa(elem[i], zent[j]);
+        talde_gertuena = j;
+      }
+    }
+    sailka[i] = talde_gertuena;
+  }
 }
 
 
