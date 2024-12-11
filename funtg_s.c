@@ -152,6 +152,7 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
           }
           mergeOrdenazioa(arr, 0, kop/2, kop - 1);
           medianak[j] = arr[kop / 2];
+          free(arr); 
       }
       float mmax = -1;
       float mmin = 101;
@@ -168,7 +169,6 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
               tmin = j;
           }
       }
-  
       eripro[i].mmax = mmax;
       eripro[i].mmin = mmin;
       eripro[i].taldemax = tmax;
