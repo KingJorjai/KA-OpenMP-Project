@@ -198,6 +198,13 @@ void mergeOrdenazioa(float arr[], int left, int mid, int right) {
         k++;
     }
 }
+
+
+/* 4 - Eritasunak analizatzeko funtzioa
+       Sarrera:  kideak  taldekideen zerrenda (taldekop tamainako struct-bektore bat: elem eta kop)
+                 eri     eritasunei buruzko informazioa (EMAX x ERIMOTA)
+       Irteera:  eripro  eritasunen analisia: medianen maximoa/minimoa, eta taldeak
+******************************************************************************************/
 void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct analisia *eripro)
 {
 
