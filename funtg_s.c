@@ -8,7 +8,7 @@
 ******************************************************************************************/
 
 #include <stddef.h>
-#include <cstdint>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>		// DBL_MAX
@@ -54,20 +54,21 @@ double distantzia_genetikoa (float *elem1, float *elem2)
 
 void talde_gertuena (int elekop, float elem[][ALDAKOP], float zent[][ALDAKOP], int *sailka)
 {
-
+  int talde_gertuena;
+  double distantzia, distantziaMin;
   // EGITEKO
   // sailka: elementu bakoitzaren zentroide hurbilena, haren "taldea"
 
   for (int i=0; i<elekop; i++)
   {
-    int talde_gertuena = -1;
-    double distantzia = DBL_MAX;
+    talde_gertuena = -1;
+    distantziaMin = DBL_MAX;
 
     for (int j=0; j<taldekop; j++)
     {  
-      if (distantzia_genetikoa(elem[i], zent[j]) < distantzia) {
-        
-        distantzia = distantzia_genetikoa(elem[i], zent[j]);
+      distantzia = distantzia_genetikoa(elem[i], zent[j]); 
+      if (distantzia < distantziaMin) {
+        distantziaMin = distantzia;
         talde_gertuena = j;
       }
     }
@@ -96,51 +97,55 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
   // Kalkulatu taldeen trinkotasuna: kideen arteko distantzien batezbestekoa
 
-  float sum;
+  double sum, talde_bereizketa[taldekop], max[taldekop]; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
 
   for (int i=0; i<taldekop; i++) // for each talde in kideak
   {
     sum = 0;
 
-    for (int j=0; j<kideak[i].kop-1; j++)
+    if (kideak[i].kop<=1) talde_trinko[i]=0; // Avoid NAN
+
+    else
     {
-       for (int k=j+1; k<kideak[i].kop; k++)
+
+      for (int j=0; j<kideak[i].kop-1; j++)
       {
-        sum += distantzia_genetikoa( elem[ kideak[i].osagaiak[j] ] , elem[ kideak[i].osagaiak[k] ] );
+         for (int k=j+1; k<kideak[i].kop; k++)
+        {
+          sum += distantzia_genetikoa( elem[ kideak[i].osagaiak[j] ] , elem[ kideak[i].osagaiak[k] ] );
+        }
       }
+      talde_trinko[i] = sum / (kideak[i].kop * (kideak[i].kop - 1) / (float) 2);
     }
-    talde_trinko[i] = sum / (kideak[i].kop * (kideak[i].kop - 1) / (float) 2);
+
   }
 
   // Kalkulatu zentroideen trinkotasuna: zentroide bakoitzeko, besteekiko b.b.-ko distantzia 
 
-  float talde_bereizketa[taldekop]; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
-  float max[taldekop];
-
   for (int i=0; i<taldekop; i++)
   {
-    sum = 0;
+    sum = 0.0;
 
     for (int j=0; j<taldekop; j++)
     {
       if (i != j) sum += distantzia_genetikoa(zent[i], zent[j]);
     }
 
-    talde_bereizketa[i] = sum;
+    talde_bereizketa[i] = sum/(taldekop-1);
 
-    if (sum > talde_trinko[i])  max[i] = sum;
+    if (talde_bereizketa[i] > talde_trinko[i])  max[i] = talde_bereizketa[i];
     else                        max[i] = talde_trinko[i];
   }
 
   // Kalkulatu cvi indizea
-  sum = 0;
+  sum = 0.0;
 
   for (int i=0; i<taldekop; i++)
   {
     sum += (talde_bereizketa[i] - talde_trinko[i]) / max[i];
   }
 
-  cvi = 1/(double)taldekop * sum;
+  cvi = sum/(double)taldekop ;
   
   return cvi;
 }
@@ -191,6 +196,13 @@ void mergeOrdenazioa(float arr[], int left, int mid, int right) {
         k++;
     }
 }
+
+
+/* 4 - Eritasunak analizatzeko funtzioa
+       Sarrera:  kideak  taldekideen zerrenda (taldekop tamainako struct-bektore bat: elem eta kop)
+                 eri     eritasunei buruzko informazioa (EMAX x ERIMOTA)
+       Irteera:  eripro  eritasunen analisia: medianen maximoa/minimoa, eta taldeak
+******************************************************************************************/
 void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct analisia *eripro)
 {
 
@@ -209,11 +221,16 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
   //            ordenatu arr eta i/2 balioa hartu medianak arraian sartu
   //      medianen maximoa eta minimoa atera, eripron-sartu
   //
+
+  float medianak[taldekop];
+  int kop, tmax, tmin;
+  float mmax, mmin; 
+  float *arr;
   for (int i = 0; i < ERIMOTA; i++) {
-      float medianak[taldekop];
+
       for (int j = 0; j < taldekop; j++) {
-          int kop = kideak[j].kop;
-          float *arr = (float *)malloc(kop * sizeof(float));
+          kop = kideak[j].kop;
+          arr = (float *)malloc(kop * sizeof(float));
 
           for (int k = 0; k < kop; k++) {
               arr[k] = eri[kideak[j].osagaiak[k]][i];
@@ -222,10 +239,10 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
           medianak[j] = arr[kop / 2];
           free(arr); 
       }
-      float mmax = -1;
-      float mmin = 101;
-      int tmax = -1;
-      int tmin = -1;
+      mmax = -1;
+      mmin = 101;
+      tmax = -1;
+      tmin = -1;
   
       for (int j = 1; j < taldekop; j++) {
           if (medianak[j] > mmax) {
