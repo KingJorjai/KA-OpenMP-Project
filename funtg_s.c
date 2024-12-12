@@ -55,20 +55,20 @@ double distantzia_genetikoa (float *elem1, float *elem2)
 void talde_gertuena (int elekop, float elem[][ALDAKOP], float zent[][ALDAKOP], int *sailka)
 {
   int talde_gertuena;
-  double distantzia, distantziaMax;
+  double distantzia, distantziaMin;
   // EGITEKO
   // sailka: elementu bakoitzaren zentroide hurbilena, haren "taldea"
 
   for (int i=0; i<elekop; i++)
   {
     talde_gertuena = -1;
-    distantziaMax = DBL_MAX;
+    distantziaMin = DBL_MAX;
 
     for (int j=0; j<taldekop; j++)
     {  
       distantzia = distantzia_genetikoa(elem[i], zent[j]); 
-      if (distantzia < distantziaMax) {
-        distantziaMax = distantzia; 
+      if (distantzia < distantziaMin) {
+        distantziaMin = distantzia;
         talde_gertuena = j;
       }
     }
@@ -97,7 +97,7 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
   // Kalkulatu taldeen trinkotasuna: kideen arteko distantzien batezbestekoa
 
-  float sum, talde_bereizketa[taldekop], max[taldekop]; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
+  double sum, talde_bereizketa[taldekop], max[taldekop]; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
 
   for (int i=0; i<taldekop; i++) // for each talde in kideak
   {
@@ -124,28 +124,28 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
   for (int i=0; i<taldekop; i++)
   {
-    sum = 0;
+    sum = 0.0;
 
     for (int j=0; j<taldekop; j++)
     {
       if (i != j) sum += distantzia_genetikoa(zent[i], zent[j]);
     }
 
-    talde_bereizketa[i] = sum;
+    talde_bereizketa[i] = sum/(taldekop-1);
 
-    if (sum > talde_trinko[i])  max[i] = sum;
+    if (talde_bereizketa[i] > talde_trinko[i])  max[i] = talde_bereizketa[i];
     else                        max[i] = talde_trinko[i];
   }
 
   // Kalkulatu cvi indizea
-  sum = 0;
+  sum = 0.0;
 
   for (int i=0; i<taldekop; i++)
   {
     sum += (talde_bereizketa[i] - talde_trinko[i]) / max[i];
   }
 
-  cvi = 1/(double)taldekop * sum;
+  cvi = sum/(double)taldekop ;
   
   return cvi;
 }
