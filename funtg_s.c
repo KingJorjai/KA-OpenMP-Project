@@ -221,14 +221,16 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
   //            ordenatu arr eta i/2 balioa hartu medianak arraian sartu
   //      medianen maximoa eta minimoa atera, eripron-sartu
   //
+
+  float medianak[taldekop];
+  int kop, tmax, tmin;
+  float mmax, mmin; 
+  float *arr;
   for (int i = 0; i < ERIMOTA; i++) {
-      float medianak[taldekop];
-      int kop, tmax, tmin;
-      float mmax, mmin; 
 
       for (int j = 0; j < taldekop; j++) {
           kop = kideak[j].kop;
-          float *arr = (float *)malloc(kop * sizeof(float));
+          arr = (float *)malloc(kop * sizeof(float));
 
           for (int k = 0; k < kop; k++) {
               arr[k] = eri[kideak[j].osagaiak[k]][i];
