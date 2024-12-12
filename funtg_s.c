@@ -210,13 +210,12 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
       for (int j = 0; j < taldekop; j++) {
           kop = kideak[j].kop;
           arr = (float *)malloc(kop * sizeof(float));
-
+          if(kop==0){medianak[j]= 0;continue;}
           for (int k = 0; k < kop; k++) {
               arr[k] = eri[kideak[j].osagaiak[k]][i];
           }
           bubbleSort(arr, kop);
           medianak[j] = arr[kop / 2];
-          printf("%f\n", medianak[j]);
           free(arr); 
       }
       mmax = 0.0;
@@ -224,7 +223,7 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
       tmax = -1;
       tmin = -1;
   
-      for (int j = 1; j < taldekop; j++) {
+      for (int j = 0; j < taldekop; j++) {
           if (medianak[j] > mmax) {
               mmax = medianak[j];
               tmax = j;
