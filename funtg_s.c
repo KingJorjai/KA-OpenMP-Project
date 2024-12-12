@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <math.h>		// DBL_MAX
 #include <float.h>
+#include <stdbool.h>
 
 #include "definetg.h"		// konstante eta datu-egituren definizioak
 
@@ -151,49 +152,27 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 }
 
 
-
-void mergeOrdenazioa(float arr[], int left, int mid, int right) {
-    int i, j, k;
-    int n1 = mid - left + 1;
-    int n2 = right - mid;
-
-    // Create temporary arrays
-    float leftArr[n1], rightArr[n2];
-
-    // Copy data to temporary arrays
-    for (i = 0; i < n1; i++)
-        leftArr[i] = arr[left + i];
-    for (j = 0; j < n2; j++)
-        rightArr[j] = arr[mid + 1 + j];
-
-    // Merge the temporary arrays back into arr[left..right]
-    i = 0;
-    j = 0;
-    k = left;
-    while (i < n1 && j < n2) {
-        if (leftArr[i] <= rightArr[j]) {
-            arr[k] = leftArr[i];
-            i++;
+void swap(float* xp, float* yp){
+    float temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+void bubbleSort(float arr[], int n){
+    int i, j;
+    bool swapped;
+    for (i = 0; i < n - 1; i++) {
+        swapped = false;
+        for (j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                swap(&arr[j], &arr[j + 1]);
+                swapped = true;
+            }
         }
-        else {
-            arr[k] = rightArr[j];
-            j++;
-        }
-        k++;
-    }
 
-    // Copy the remaining elements of leftArr[], if any
-    while (i < n1) {
-        arr[k] = leftArr[i];
-        i++;
-        k++;
-    }
-
-    // Copy the remaining elements of rightArr[], if any
-    while (j < n2) {
-        arr[k] = rightArr[j];
-        j++;
-        k++;
+        // If no two elements were swapped by inner loop,
+        // then break
+        if (swapped == false)
+            break;
     }
 }
 
@@ -235,12 +214,13 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
           for (int k = 0; k < kop; k++) {
               arr[k] = eri[kideak[j].osagaiak[k]][i];
           }
-          mergeOrdenazioa(arr, 0, kop/2, kop - 1);
+          bubbleSort(arr, kop);
           medianak[j] = arr[kop / 2];
+          printf("%f\n", medianak[j]);
           free(arr); 
       }
-      mmax = -1;
-      mmin = 101;
+      mmax = 0.0;
+      mmin = 1.0;
       tmax = -1;
       tmin = -1;
   
