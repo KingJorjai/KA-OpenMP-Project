@@ -35,9 +35,6 @@ double distantzia_genetikoa (float *elem1, float *elem2)
 
     double sum = 0;
 
-#pragma omp parallel for default(none) \
-  shared(elem1, elem2) \
-  reduction(+:sum)
     for ( int i=0; i<ALDAKOP; i++ )
     {
         sum += pow( elem1[i] - elem2[i] , 2);
@@ -228,11 +225,11 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
       free(arr);
 
       // Update values
-      if (mediana > eripro[j].mmax) {
+      if (i==0 || mediana > eripro[j].mmax) {
           eripro[j].mmax = mediana;
           eripro[j].taldemax = i;
       }
-      if (mediana < eripro[j].mmin) {
+      if (i==0 || mediana < eripro[j].mmin) {
         eripro[j].mmin = mediana;
         eripro[j].taldemin = i;
       }
