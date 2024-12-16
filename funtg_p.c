@@ -104,24 +104,27 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
   // Kalkulatu taldeen trinkotasuna: kideen arteko distantzien batezbestekoa
 
   double sum, talde_bereizketa[taldekop], max[taldekop]; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
+  int count;
 
   for (int i=0; i<taldekop; i++) // for each talde in kideak
   {
-    sum = 0;
+    sum = 0; count = 0;
 
-    if (kideak[i].kop<=1) talde_trinko[i]=0; // Avoid NAN
-
-    else
+    if (kideak[i].kop>1)
     {
-
+      #pragma omp parallel for default(none) \
+      shared(kideak, elem, i) \
+      reduction(+:sum) \
+      reduction(+:count)
       for (int j=0; j<kideak[i].kop-1; j++)
       {
          for (int k=j+1; k<kideak[i].kop; k++)
         {
+          count++;
           sum += distantzia_genetikoa( elem[ kideak[i].osagaiak[j] ] , elem[ kideak[i].osagaiak[k] ] );
         }
       }
-      talde_trinko[i] = sum / (kideak[i].kop * (kideak[i].kop - 1) / (float) 2);
+      talde_trinko[i] = sum / count;
     }
 
   }
