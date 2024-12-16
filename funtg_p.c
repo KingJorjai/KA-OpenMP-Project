@@ -14,6 +14,7 @@
 #include <math.h>		// DBL_MAX
 #include <float.h>
 #include <stdbool.h>
+#include <omp.h>
 
 #include "definetg.h"		// konstante eta datu-egituren definizioak
 
@@ -59,7 +60,11 @@ void talde_gertuena (int elekop, float elem[][ALDAKOP], float zent[][ALDAKOP], i
   double distantzia, distantziaMin;
   // EGITEKO
   // sailka: elementu bakoitzaren zentroide hurbilena, haren "taldea"
-
+  // i eta j ez dute privatean egon behar hari barruan deklaratzerakoan pribatuak direlako definizioz
+  // gainera, ez dira oraindik existitzen
+  #pragma omp parallel for default(none) \
+    private(distantziaMin,distantzia, talde_gertuena) \
+    shared(taldekop, elekop, elem, sailka, zent)
   for (int i=0; i<elekop; i++)
   {
     talde_gertuena = -1;
