@@ -225,11 +225,11 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
       free(arr);
 
       // Update values
-      if (mediana > eripro[j].mmax) {
+      if (i==0 || mediana > eripro[j].mmax) {
           eripro[j].mmax = mediana;
           eripro[j].taldemax = i;
       }
-      if (mediana < eripro[j].mmin) {
+      if (i==0 || mediana < eripro[j].mmin) {
         eripro[j].mmin = mediana;
         eripro[j].taldemin = i;
       }
