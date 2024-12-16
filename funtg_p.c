@@ -35,6 +35,9 @@ double distantzia_genetikoa (float *elem1, float *elem2)
 
     double sum = 0;
 
+#pragma omp parallel for default(none) \
+  shared(elem1, elem2) \
+  reduction(+:sum)
     for ( int i=0; i<ALDAKOP; i++ )
     {
         sum += pow( elem1[i] - elem2[i] , 2);
