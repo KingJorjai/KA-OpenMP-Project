@@ -203,51 +203,37 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
   //      medianen maximoa eta minimoa atera, eripron-sartu
   //
 
-  float mediana;
-  int kop, tmax, tmin;
-  float mmax, mmin;
-  float *arr;
+  float mediana, *arr;
+  int kop;
 
-  for (int i = 0; i < ERIMOTA; i++)
-  {
-    mmax = 0.0;
-    mmin = 1.0;
-    tmax = -1;
-    tmin = -1;
-
-    for (int j = 0; j < taldekop; j++)
+  for (int i = 0; i < taldekop; i++)
+    #pragma parallel for default(none) \
+      shared(i, eri, eripro, kideak) \
+      private(arr, mediana, kop)
+    for (int j = 0; j < ERIMOTA; j++)
     {
-      kop = kideak[j].kop;
-      if (kop != 0)
-      {
+      kop = kideak[i].kop;
+      if (kop == 0) continue;
         // Calculate median
-        arr = (float *)malloc(kop * sizeof(float));
-        for (int k = 0; k < kop; k++)
-        {
-            arr[k] = eri[kideak[j].osagaiak[k]][i];
-        }
-        bubbleSort(arr, kop);
-        mediana = arr[kop / 2];
-        free(arr); 
-        
-        // Update values
-        if (mediana > eripro[i].mmax) {
-            eripro[i].mmax = mediana;
-            eripro[i].taldemax = j;
-        }
-        if (mediana < eripro[i].mmin) {
-          eripro[i].mmin = mediana;
-          eripro[i].taldemin = j;
-        }
+      arr = (float *)malloc(kop * sizeof(float));
+      for (int k = 0; k < kop; k++)
+      {
+          arr[k] = eri[kideak[i].osagaiak[k]][j];
+      }
+      bubbleSort(arr, kop);
+      mediana = arr[kop / 2];
+      free(arr);
+
+      // Update values
+      if (mediana > eripro[j].mmax) {
+          eripro[j].mmax = mediana;
+          eripro[j].taldemax = i;
+      }
+      if (mediana < eripro[j].mmin) {
+        eripro[j].mmin = mediana;
+        eripro[j].taldemin = i;
       }
     }
-
-
-
-      for (int j = 0; j < taldekop; j++)
-      {
-      }
-  }
 }
 
 
