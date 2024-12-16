@@ -29,18 +29,15 @@
 
 double distantzia_genetikoa (float *elem1, float *elem2)
 {
-   
-  // EGITEKO
   // Kalkulatu bi elementuren arteko distantzia (euklidearra)
-
-    double sum = 0;
-
-    for ( int i=0; i<ALDAKOP; i++ )
-    {
-        sum += pow( elem1[i] - elem2[i] , 2);
-    }
-
-    return sqrt(sum);
+  double sum = 0;
+  //Elementu guztien distantziaren karratua gehitu
+  for ( int i=0; i<ALDAKOP; i++ )
+  {
+    sum += pow( elem1[i] - elem2[i] , 2);
+  }
+  //distantziaren erro karratua atera.
+  return sqrt(sum);
 }
 
 
@@ -69,7 +66,7 @@ void talde_gertuena (int elekop, float elem[][ALDAKOP], float zent[][ALDAKOP], i
   {
     talde_gertuena = -1;
     distantziaMin = DBL_MAX;
-
+    //talde bakoitzaren distantzia minimoa eskuratu.
     for (int j=0; j<taldekop; j++)
     {  
       distantzia = distantzia_genetikoa(elem[i], zent[j]); 
@@ -78,6 +75,7 @@ void talde_gertuena (int elekop, float elem[][ALDAKOP], float zent[][ALDAKOP], i
         talde_gertuena = j;
       }
     }
+    //distantzia minimioa gorde
     sailka[i] = talde_gertuena;
   }
 }
@@ -97,25 +95,21 @@ void talde_gertuena (int elekop, float elem[][ALDAKOP], float zent[][ALDAKOP], i
 
 double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[][ALDAKOP], float *talde_trinko)
 {
-
-  // EGITEKO
-  double cvi;
-
   // Kalkulatu taldeen trinkotasuna: kideen arteko distantzien batezbestekoa
-
-  double a_bb, b_bb, talde_bereizketa[taldekop], max; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
+  double a_bb, b_bb, talde_bereizketa[taldekop], max, cvi; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
   int count;
 
-  for (int i=0; i<taldekop; i++) // for each talde in kideak
+  for (int i=0; i<taldekop; i++) 
   {
     a_bb = 0; count = 0;
-
+    //taldeak elementurik ez badu edo elementu bat bakarrik izatekotan, ez da zenbatzen batezbestekoarentzako
     if (kideak[i].kop>1)
     {
       #pragma omp parallel for default(none) \
       shared(kideak, elem, i) \
       reduction(+:a_bb) \
       reduction(+:count)
+      //elementu guztien distantzia konparatzen dugu
       for (int j=0; j<kideak[i].kop-1; j++)
       {
          for (int k=j+1; k<kideak[i].kop; k++)
@@ -124,6 +118,7 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
           a_bb += distantzia_genetikoa( elem[ kideak[i].osagaiak[j] ] , elem[ kideak[i].osagaiak[k] ] );
         }
       }
+      //distantzien batura zenbatutako elementuen kopuruarengatik zatitzen da, batazbestekoa lortuz.
       talde_trinko[i] = a_bb / count;
     }
 
@@ -153,29 +148,29 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
   return cvi / taldekop;
 }
 
-
+//bi float motatako datuak trukatzen du.
 void swap(float* xp, float* yp){
-    float temp = *xp;
-    *xp = *yp;
-    *yp = temp;
+  float temp = *xp;
+  *xp = *yp;
+  *yp = temp;
 }
-void bubbleSort(float arr[], int n){
-    int i, j;
-    bool swapped;
-    for (i = 0; i < n - 1; i++) {
-        swapped = false;
-        for (j = 0; j < n - i - 1; j++) {
-            if (arr[j] > arr[j + 1]) {
-                swap(&arr[j], &arr[j + 1]);
-                swapped = true;
-            }
-        }
 
-        // If no two elements were swapped by inner loop,
-        // then break
-        if (swapped == false)
-            break;
+//buble sort ordenazio algoritmoa erabiliz float motatako datuen arraya ordenatzen du.
+void bubbleSort(float arr[], int n){
+  int i, j;
+  bool swapped;
+  for (i = 0; i < n - 1; i++) {
+    swapped = false;
+    for (j = 0; j < n - i - 1; j++) {
+      if (arr[j] > arr[j + 1]) {
+          swap(&arr[j], &arr[j + 1]);
+          swapped = true;
+      }
     }
+
+    if (swapped == false)
+        break;
+  }
 }
 
 
@@ -186,23 +181,6 @@ void bubbleSort(float arr[], int n){
 ******************************************************************************************/
 void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct analisia *eripro)
 {
-
-  // EGITEKO
-  // Prozesatu eritasunei buruzko informazioa talde bakoitzeko kideen artean:
-// eritasunak agertzeko probabilitateen mediana.
-  // Eritasun bakoitzerako, medianen maximoa eta minimoa eta zein taldetan.
-  //
-  // Pseudokodea:
-  // I begizta erimota arte, honek eritasun bakoitzeko iteratuko du.
-  //      Mediana float array bat taldekop tamainakoa taldeen medianak gordetzeko
-  //      J begizta taldekop arte, honek eritasun bakoitzean taldeak iteratuko ditu
-  //            arr[] float array bat (malloc) kideak[j].kop tamainakoa honek elementuen informazioa izango du.
-  //            K begizta kideak[j].kop tamainakoa, honek eritasun bakoitzeko talde bakoitzeko elementuak iteratuko ditu.
-  //                  kideak[j].osagaiak[k] begiratu eri[i]n eta arr[] en jarri.
-  //            ordenatu arr eta i/2 balioa hartu medianak arraian sartu
-  //      medianen maximoa eta minimoa atera, eripron-sartu
-  //
-
   float mediana, *arr;
   int kop;
 
@@ -213,18 +191,23 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
     for (int j = 0; j < ERIMOTA; j++)
     {
       kop = kideak[i].kop;
+      //Talde batek ez badu elementurik hurrengo taldeekin jarraitzen da.
       if (kop == 0) continue;
-        // Calculate median
+      //array dinamikoa erabiltzen da (malloc) talde bakoitzak elementu kopuru desberdina duelako.
       arr = (float *)malloc(kop * sizeof(float));
+      // array batean talde eta eritasun bateko elementu guztiak sartzen ditu
       for (int k = 0; k < kop; k++)
       {
           arr[k] = eri[kideak[i].osagaiak[k]][j];
       }
+      //arraya ordenatzen da mediana arrayaren erdiko posizioaren balioa izan dadin.
       bubbleSort(arr, kop);
       mediana = arr[kop / 2];
+      // malloc egiturak eskatzen duen memoria askatzeko funtzioa
       free(arr);
 
-      // Update values
+      // Mediana maximoa eta minimoa eskuratzen ditu honek taldearen barruan hartzen duen posizioarekin.
+      // Lehenengo elementuak beti esleitzen dira.  
       if (i==0 || mediana > eripro[j].mmax) {
           eripro[j].mmax = mediana;
           eripro[j].taldemax = i;
