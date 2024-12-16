@@ -103,60 +103,54 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
   // Kalkulatu taldeen trinkotasuna: kideen arteko distantzien batezbestekoa
 
-  double sum, talde_bereizketa[taldekop], max[taldekop]; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
+  double a_bb, b_bb, talde_bereizketa[taldekop], max; // Zentroide bakoitzaren batez batezbesteko distantzia besteekiko
   int count;
 
   for (int i=0; i<taldekop; i++) // for each talde in kideak
   {
-    sum = 0; count = 0;
+    a_bb = 0; count = 0;
 
     if (kideak[i].kop>1)
     {
       #pragma omp parallel for default(none) \
       shared(kideak, elem, i) \
-      reduction(+:sum) \
+      reduction(+:a_bb) \
       reduction(+:count)
       for (int j=0; j<kideak[i].kop-1; j++)
       {
          for (int k=j+1; k<kideak[i].kop; k++)
         {
           count++;
-          sum += distantzia_genetikoa( elem[ kideak[i].osagaiak[j] ] , elem[ kideak[i].osagaiak[k] ] );
+          a_bb += distantzia_genetikoa( elem[ kideak[i].osagaiak[j] ] , elem[ kideak[i].osagaiak[k] ] );
         }
       }
-      talde_trinko[i] = sum / count;
+      talde_trinko[i] = a_bb / count;
     }
 
-  }
-
-  // Kalkulatu zentroideen trinkotasuna: zentroide bakoitzeko, besteekiko b.b.-ko distantzia 
-
-  for (int i=0; i<taldekop; i++)
-  {
-    sum = 0.0;
-
+    // Kalkulatu zentroideen trinkotasuna: zentroide bakoitzeko, besteekiko b.b.-ko distantzia
+    b_bb = 0.0;
+    #pragma omp parallel for default(none) \
+      shared(taldekop, zent, i) \
+      reduction(+:b_bb)
     for (int j=0; j<taldekop; j++)
     {
-      if (i != j) sum += distantzia_genetikoa(zent[i], zent[j]);
+      if (i != j) b_bb += distantzia_genetikoa(zent[i], zent[j]);
     }
 
-    talde_bereizketa[i] = sum/(taldekop-1);
-
-    if (talde_bereizketa[i] > talde_trinko[i])  max[i] = talde_bereizketa[i];
-    else                        max[i] = talde_trinko[i];
+    talde_bereizketa[i] = b_bb/(taldekop-1);
   }
 
   // Kalkulatu cvi indizea
-  sum = 0.0;
-
+  #pragma omp parallel for default(none) \
+    shared(taldekop, talde_bereizketa, talde_trinko) \
+    reduction(+:cvi)
   for (int i=0; i<taldekop; i++)
   {
-    sum += (talde_bereizketa[i] - talde_trinko[i]) / max[i];
+    cvi += (talde_bereizketa[i] - talde_trinko[i]) /
+      (talde_bereizketa[i] > talde_trinko[i] ? talde_bereizketa[i] : talde_trinko[i]);
   }
 
-  cvi = sum/(double)taldekop ;
-  
-  return cvi;
+  return cvi / taldekop;
 }
 
 
