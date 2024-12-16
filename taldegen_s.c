@@ -171,7 +171,7 @@ void main (int argc, char *argv[])
   // Taldeen analisia, eritasunak: medianen maximoa, minimoa...
   // OSATZEKO funtg_s fitxategian
   
-  // eritasunen_analisia (kideak, eri, eripro);
+  eritasunen_analisia (kideak, eri, eripro);
 
   clock_gettime (CLOCK_REALTIME, &t4);
 
