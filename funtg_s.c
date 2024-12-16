@@ -201,48 +201,50 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
   //      medianen maximoa eta minimoa atera, eripron-sartu
   //
 
-  float medianak[taldekop];
+  float mediana;
   int kop, tmax, tmin;
-  float mmax, mmin; 
+  float mmax, mmin;
   float *arr;
 
-  for (int i = 0; i < ERIMOTA; i++) 
+  for (int i = 0; i < ERIMOTA; i++)
   {
+    mmax = 0.0;
+    mmin = 1.0;
+    tmax = -1;
+    tmin = -1;
+
+    for (int j = 0; j < taldekop; j++)
+    {
+      kop = kideak[j].kop;
+      if (kop != 0)
+      {
+        // Calculate median
+        arr = (float *)malloc(kop * sizeof(float));
+        for (int k = 0; k < kop; k++)
+        {
+            arr[k] = eri[kideak[j].osagaiak[k]][i];
+        }
+        bubbleSort(arr, kop);
+        mediana = arr[kop / 2];
+        free(arr); 
+        
+        // Update values
+        if (mediana > eripro[i].mmax) {
+            eripro[i].mmax = mediana;
+            eripro[i].taldemax = j;
+        }
+        if (mediana < eripro[i].mmin) {
+          eripro[i].mmin = mediana;
+          eripro[i].taldemin = j;
+        }
+      }
+    }
+
+
+
       for (int j = 0; j < taldekop; j++)
       {
-          kop = kideak[j].kop;
-          if(kop==0){medianak[j]= 0;continue;}
-          arr = (float *)malloc(kop * sizeof(float));
-
-          for (int k = 0; k < kop; k++) {
-              arr[k] = eri[kideak[j].osagaiak[k]][i];
-          }
-
-          bubbleSort(arr, kop);
-          medianak[j] = arr[kop / 2];
-          free(arr); 
       }
-
-      mmax = 0.0;
-      mmin = 1.0;
-      tmax = -1;
-      tmin = -1;
-  
-      for (int j = 0; j < taldekop; j++) 
-      {
-          if (medianak[j] > mmax) {
-              mmax = medianak[j];
-              tmax = j;
-          }
-          if (medianak[j] < mmin) {
-              mmin = medianak[j];
-              tmin = j;
-          }
-      }
-      eripro[i].mmax = mmax;
-      eripro[i].mmin = mmin;
-      eripro[i].taldemax = tmax;
-      eripro[i].taldemin = tmin;
   }
 }
 
