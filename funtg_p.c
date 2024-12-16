@@ -14,6 +14,7 @@
 #include <math.h>		// DBL_MAX
 #include <float.h>
 #include <stdbool.h>
+#include <omp.h>
 
 #include "definetg.h"		// konstante eta datu-egituren definizioak
 
@@ -34,6 +35,9 @@ double distantzia_genetikoa (float *elem1, float *elem2)
 
     double sum = 0;
 
+#pragma omp parallel for default(none) \
+  shared(elem1, elem2, ALDAKOP) \
+  reduction (+:sum)
     for ( int i=0; i<ALDAKOP; i++ )
     {
         sum += pow( elem1[i] - elem2[i] , 2);
