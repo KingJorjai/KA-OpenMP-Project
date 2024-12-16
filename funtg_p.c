@@ -203,12 +203,13 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
   //      medianen maximoa eta minimoa atera, eripron-sartu
   //
 
-  float mediana;
-  int kop, tmax, tmin;
-  float mmax, mmin;
-  float *arr;
+  float mediana, *arr;
+  int kop;
 
   for (int i = 0; i < taldekop; i++)
+    #pragma parallel for default(none) \
+      shared(i, eri, eripro, kideak) \
+      private(arr, mediana, kop)
     for (int j = 0; j < ERIMOTA; j++)
     {
       kop = kideak[i].kop;
