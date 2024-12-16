@@ -62,9 +62,6 @@ void talde_gertuena (int elekop, float elem[][ALDAKOP], float zent[][ALDAKOP], i
   // sailka: elementu bakoitzaren zentroide hurbilena, haren "taldea"
   // i eta j ez dute privatean egon behar hari barruan deklaratzerakoan pribatuak direlako definizioz
   // gainera, ez dira oraindik existitzen
-  #pragma omp parallel for default(none) \
-    private(distantziaMin,distantzia, talde_gertuena) \
-    shared(taldekop, elekop, elem, sailka, zent)
   for (int i=0; i<elekop; i++)
   {
     talde_gertuena = -1;
@@ -112,10 +109,6 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
     if (kideak[i].kop>1)
     {
-      #pragma omp parallel for default(none) \
-      shared(kideak, elem, i) \
-      reduction(+:a_bb) \
-      reduction(+:count)
       for (int j=0; j<kideak[i].kop-1; j++)
       {
          for (int k=j+1; k<kideak[i].kop; k++)
@@ -129,9 +122,6 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
 
     // Kalkulatu zentroideen trinkotasuna: zentroide bakoitzeko, besteekiko b.b.-ko distantzia
     b_bb = 0.0;
-    #pragma omp parallel for default(none) \
-      shared(taldekop, zent, i) \
-      reduction(+:b_bb)
     for (int j=0; j<taldekop; j++)
     {
       if (i != j) b_bb += distantzia_genetikoa(zent[i], zent[j]);
@@ -141,9 +131,6 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
   }
 
   // Kalkulatu cvi indizea
-  #pragma omp parallel for default(none) \
-    shared(taldekop, talde_bereizketa, talde_trinko) \
-    reduction(+:cvi)
   for (int i=0; i<taldekop; i++)
   {
     cvi += (talde_bereizketa[i] - talde_trinko[i]) /
@@ -207,9 +194,6 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
   int kop;
 
   for (int i = 0; i < taldekop; i++)
-    #pragma parallel for default(none) \
-      shared(i, eri, eripro, kideak) \
-      private(arr, mediana, kop)
     for (int j = 0; j < ERIMOTA; j++)
     {
       kop = kideak[i].kop;
