@@ -26,7 +26,7 @@ fi
 
 # Creating the table
 date_now=$(date '+%Y-%m-%d_%H-%M-%S')
-table="results${2}_${date_now}.csv"
+table="results${2}_$(printenv OMP_SCHEDULE)_${date_now}.csv"
 
 # Create the headers of the table
 echo "OMP_NUM_THREADS,T_irakurtzea,T_sailkatzea,T_eritasunak,T_idaztea,T_osoa" >> $table
@@ -34,7 +34,7 @@ echo "OMP_NUM_THREADS,T_irakurtzea,T_sailkatzea,T_eritasunak,T_idaztea,T_osoa" >
 possible_thread_num=(1 2 4 8 16 24 32 48 64)
 
 # Log the scheduling used
-echo "Scheduling set to $(printenv OMP_NUM_THREADS)"
+echo "Scheduling set to $(printenv OMP_SCHEDULE)"
 
 # Custom number of runs
 default_num_runs=1
