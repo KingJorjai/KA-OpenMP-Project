@@ -57,10 +57,10 @@ for i in ${possible_thread_num[@]}; do
     # Get the current execution ordinal
     count_nth=$count
     case "$count" in
-      *1) "${count_nth}st" ;;
-      *2) "${count_nth}nd" ;;
-      *3) "${count_nth}rd" ;;
-      *)  "${count_nth}th" ;;
+      *1) count_nth+="st" ;;
+      *2) count_nth+="nd" ;;
+      *3) count_nth+="rd" ;;
+      *)  count_nth+="th" ;;
     esac      
 
     if [[ $i -eq 1 ]]; then
