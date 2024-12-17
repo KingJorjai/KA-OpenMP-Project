@@ -106,9 +106,10 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
     if (kideak[i].kop>1)
     {
       #pragma omp parallel for default(none) \
-      shared(kideak, elem, i) \
-      reduction(+:a_bb) \
-      reduction(+:count)
+        shared(kideak, elem, i) \
+        reduction(+:a_bb) \
+        reduction(+:count) \
+        schedule(runtime)
       //elementu guztien distantzia konparatzen dugu
       for (int j=0; j<kideak[i].kop-1; j++)
       {
@@ -126,7 +127,8 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
     b_bb = 0.0;
     #pragma omp parallel for default(none) \
       shared(taldekop, zent, i) \
-      reduction(+:b_bb)
+      reduction(+:b_bb) \
+      schedule(runtime)
     for (int j=0; j<taldekop; j++)
     {
       if (i != j) b_bb += distantzia_genetikoa(zent[i], zent[j]);
@@ -138,7 +140,8 @@ double balidazioa (float elem[][ALDAKOP], struct taldeinfo *kideak, float zent[]
   // Kalkulatu cvi indizea
   #pragma omp parallel for default(none) \
     shared(taldekop, talde_bereizketa, talde_trinko) \
-    reduction(+:cvi)
+    reduction(+:cvi) \
+    schedule(runtime)
   for (int i=0; i<taldekop; i++)
   {
     cvi += (talde_bereizketa[i] - talde_trinko[i]) /
@@ -187,7 +190,8 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
   for (int i = 0; i < taldekop; i++)
     #pragma parallel for default(none) \
       shared(i, eri, eripro, kideak) \
-      private(arr, mediana, kop)
+      private(arr, mediana, kop) \
+      schedule(runtime)
     for (int j = 0; j < ERIMOTA; j++)
     {
       kop = kideak[i].kop;
