@@ -33,6 +33,11 @@ echo "OMP_NUM_THREADS,T_irakurtzea,T_sailkatzea,T_eritasunak,T_idaztea,T_osoa" >
  
 possible_thread_num=(1 2 4 8 16 24 32 48 64)
 
+# Print number of CPUs
+CPUs=$(lscpu -e=CPU | tail -n 1)
+((CPUs+=1))
+echo "The device has ${CPUs} CPUs."
+
 # Log the scheduling used
 echo "Scheduling set to $(printenv OMP_SCHEDULE)"
 
