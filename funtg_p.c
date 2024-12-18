@@ -188,7 +188,7 @@ void eritasunen_analisia (struct taldeinfo *kideak, float eri[][ERIMOTA], struct
   int kop;
 
   for (int i = 0; i < taldekop; i++)
-    #pragma parallel for default(none) \
+    #pragma omp parallel for default(none) \
       shared(i, eri, eripro, kideak) \
       private(arr, mediana, kop) \
       schedule(runtime)
